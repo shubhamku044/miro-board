@@ -21,7 +21,7 @@ export const Item = ({ id, name, imageUrl }: IProps) => {
     setActive({ organization: id });
   };
   return (
-    <li className="aspect-square relative">
+    <li className="relative aspect-square">
       <Hint label={name} side="right" align="center">
         <Image
           alt={name}

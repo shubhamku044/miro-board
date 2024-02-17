@@ -1,14 +1,14 @@
-"use client";
-import qs from "query-string";
-import { Search } from "lucide-react";
-import { useDebounce } from "usehooks-ts";
-import { useEffect, useState, ChangeEvent } from "react";
-import { Input } from "@/components/ui/input";
-import { useRouter } from "next/navigation";
+'use client';
+import qs from 'query-string';
+import { Search } from 'lucide-react';
+import { useDebounce } from 'usehooks-ts';
+import { useEffect, useState, ChangeEvent } from 'react';
+import { Input } from '@/components/ui/input';
+import { useRouter } from 'next/navigation';
 
-export const SearchInput = () => {
+const SearchInput = () => {
   const router = useRouter();
-  const [value, setValue] = useState<string>("");
+  const [value, setValue] = useState<string>('');
   const debounceValue = useDebounce(value, 500);
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -18,19 +18,19 @@ export const SearchInput = () => {
   useEffect(() => {
     const url = qs.stringifyUrl(
       {
-        url: "/",
+        url: '/',
         query: {
           search: debounceValue,
         },
       },
-      { skipEmptyString: true, skipNull: true },
+      { skipEmptyString: true, skipNull: true }
     );
     router.push(url);
   }, [debounceValue, router]);
 
   return (
-    <div className="w-full relative">
-      <Search className="absolute top-1/2 h-4 w-4 text-muted-foreground left-3 transform -translate-y-1/2" />
+    <div className="relative w-full">
+      <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
       <Input
         onChange={handleChange}
         placeholder="Search boards"
@@ -40,3 +40,5 @@ export const SearchInput = () => {
     </div>
   );
 };
+
+export default SearchInput;

@@ -8,11 +8,11 @@ const InviteButton = () => {
     <Dialog>
       <DialogTrigger asChild>
         <Button variant="outline">
-          <Plus className="size-4 mr-2" />
+          <Plus className="mr-2 size-4" />
           Invite members
         </Button>
       </DialogTrigger>
-      <DialogContent className="p-0 bg-transparent border-none max-w-4xl">
+      <DialogContent className="max-w-4xl border-none bg-transparent p-0">
         <OrganizationProfile />
       </DialogContent>
     </Dialog>

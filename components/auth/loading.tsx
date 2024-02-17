@@ -2,7 +2,7 @@ import Image from "next/image";
 
 export const Loading = () => {
   return (
-    <div className="flex items-center justify-center h-full">
+    <div className="flex h-full items-center justify-center">
       <Image
         src={"/logo.svg"}
         alt="logo"
