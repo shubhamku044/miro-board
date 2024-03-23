@@ -1,5 +1,5 @@
 'use client';
-import { Link2, Trash2 } from 'lucide-react';
+import { Link2, Pencil, Trash2 } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -12,6 +12,7 @@ import { api } from '@/convex/_generated/api';
 import { useApiMutation } from '@/hooks/use-api-mutation';
 import ConfirmModal from './confirm-modal';
 import { Button } from './ui/button';
+import { useRenameModal } from '@/store/use-rename-modal';
 
 interface IProps {
   children: React.ReactNode;
@@ -23,6 +24,7 @@ interface IProps {
 
 export const Actions = ({ children, side, sideOffset, id, title }: IProps) => {
   const { mutate, pending } = useApiMutation(api.board.remove);
+  const { onOpen } = useRenameModal();
   const onCopyLink = () => {
     navigator.clipboard
       .writeText(`${window.location.origin}/board/${id}`)
@@ -55,6 +57,10 @@ export const Actions = ({ children, side, sideOffset, id, title }: IProps) => {
         <DropdownMenuItem onClick={onCopyLink}>
           <Link2 className="mr-2 size-4" />
           Copy board link
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => onOpen(id, title)}>
+          <Pencil className="mr-2 size-4" />
+          Rename
         </DropdownMenuItem>
         <ConfirmModal
           header="Delete board"
