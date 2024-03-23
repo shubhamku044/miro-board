@@ -26,7 +26,11 @@ export const Footer = ({
       </p>
       <button
         disabled={disabled}
-        onClick={onClick}
+        onClick={(e) => {
+          e.stopPropagation();
+          e.preventDefault();
+          onClick();
+        }}
         className={cn(
           'opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-blue-300 transition absolute top-3 right-3',
           disabled && 'cursor-not-allowed opacity-75'

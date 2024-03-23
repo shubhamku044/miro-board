@@ -54,7 +54,7 @@ const BoardList = ({ orgId, query }: IProps) => {
               authorId={board.authorId}
               orgId={board.orgId}
               createdAt={board._creationTime}
-              isFavorite={false}
+              isFavorite={board.isFavorite}
             />
           );
         })}
