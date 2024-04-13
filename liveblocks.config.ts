@@ -89,10 +89,6 @@ export const {
     useMarkThreadAsRead,
     useRoomNotificationSettings,
     useUpdateRoomNotificationSettings,
-
-    // These hooks can be exported from either context
-    // useUser,
-    // useRoomInfo
   },
 } = createRoomContext<Presence, Storage, UserMeta, RoomEvent, ThreadMetadata>(
   client
