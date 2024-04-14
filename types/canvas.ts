@@ -92,6 +92,15 @@ export type CanvasState =
     mode: CanvasMode.None;
   }
   | {
+    mode: CanvasMode.Inserting;
+    layerType:
+    | LayerType.Ellipse
+    | LayerType.Rectangle
+    | LayerType.Path
+    | LayerType.Text
+    | LayerType.Note;
+  }
+  | {
     mode: CanvasMode.Pressing;
     origin: Point;
   }
@@ -103,15 +112,6 @@ export type CanvasState =
   | {
     mode: CanvasMode.Translating;
     current: Point;
-  }
-  | {
-    mode: CanvasMode.Inserting;
-    layerType:
-    | LayerType.Ellipse
-    | LayerType.Rectangle
-    | LayerType.Path
-    | LayerType.Text
-    | LayerType.Note;
   }
   | {
     mode: CanvasMode.Resizing;
