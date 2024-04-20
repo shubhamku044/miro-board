@@ -24,6 +24,7 @@ import {
 import { CursorPresence } from './cursor-presence';
 import { pointerEventToCanvasPoint } from '@/lib/utils';
 import { LiveObject } from '@liveblocks/client';
+import LayerPreview from './layer-preview';
 
 interface IProps {
   boardId: string;
@@ -155,7 +156,15 @@ export const Canvas = ({ boardId }: IProps) => {
             transform: `translate(${camera.x}px, ${camera.y}px)`,
           }}
         >
-          <CursorPresence />,
+          {layerIds.map((layerId) => (
+            <LayerPreview
+              key={layerId}
+              id={layerId}
+              onLayerPointerDown={(e) => {}}
+              selectionColor="#000"
+            />
+          ))}
+          <CursorPresence />
         </g>
       </svg>
     </main>
