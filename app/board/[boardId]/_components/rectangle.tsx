@@ -1,3 +1,4 @@
+import { rgbColorToHex } from '@/lib/utils';
 import { RectangleLayer } from '@/types/canvas';
 import React from 'react';
 
@@ -15,6 +16,7 @@ const Rectangle = ({
   selectionColor,
 }: RectangleProps) => {
   const { x, y, height, width, fill } = layer;
+
   return (
     <rect
       className="drop-shadow-md"
@@ -26,8 +28,8 @@ const Rectangle = ({
       y={0}
       width={width}
       height={height}
-      fill={'#000'}
-      stroke={'transparent'}
+      fill={fill ? rgbColorToHex(fill) : '#000'}
+      stroke={selectionColor || 'transparent'}
     />
   );
 };

@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { Info } from './info';
 import { Participants } from './participants';
 import { ToolBar } from './tool-bar';
@@ -13,6 +13,8 @@ import {
   Layer,
   LayerType,
   Point,
+  Side,
+  XYWH,
 } from '@/types/canvas';
 import {
   useHistory,
@@ -20,11 +22,17 @@ import {
   useCanRedo,
   useMutation,
   useStorage,
+  useOthersMapped,
 } from '@/liveblocks.config';
 import { CursorPresence } from './cursor-presence';
-import { pointerEventToCanvasPoint } from '@/lib/utils';
+import {
+  connectionIdToColor,
+  pointerEventToCanvasPoint,
+  resizeBounds,
+} from '@/lib/utils';
 import { LiveObject } from '@liveblocks/client';
 import LayerPreview from './layer-preview';
+import { SelectionBox } from './selection-box';
 
 interface IProps {
   boardId: string;
@@ -90,13 +98,38 @@ export const Canvas = ({ boardId }: IProps) => {
     [lastUsedColor]
   );
 
+  const resizeSelectedLayer = useMutation(
+    ({ storage, self }, point: Point) => {
+      if (canvasState.mode !== CanvasMode.Resizing) {
+        return;
+      }
+      const bounds = resizeBounds(
+        canvasState.initialBounds,
+        canvasState.corner,
+        point
+      );
+
+      const liveLayers = storage.get('layers');
+      const layer = liveLayers.get(self.presence.selection[0]);
+      if (layer) {
+        layer.update(bounds);
+      }
+    },
+    [canvasState]
+  );
+
   const onPointerMove = useMutation(
     ({ setMyPresence }, e: React.PointerEvent) => {
       e.preventDefault();
       const curr = pointerEventToCanvasPoint(e, camera);
+
+      if (canvasState.mode === CanvasMode.Resizing) {
+        resizeSelectedLayer(curr);
+      }
+
       setMyPresence({ cursor: curr });
     },
-    []
+    [canvasState, resizeSelectedLayer, camera]
   );
 
   const onWheel = useCallback((e: React.WheelEvent) => {
@@ -132,6 +165,63 @@ export const Canvas = ({ boardId }: IProps) => {
     [camera, canvasState, history, insertLayer]
   );
 
+  const selections = useOthersMapped((other) => other.presence.selection);
+
+  const layerIdsToColorSelection = useMemo(() => {
+    const layerIdsToColorSelection: Record<string, string> = {};
+    for (const user of selections) {
+      const [connectionId, selection] = user;
+      for (const layerId of selection) {
+        layerIdsToColorSelection[layerId] = connectionIdToColor(connectionId);
+      }
+    }
+    return layerIdsToColorSelection;
+  }, [selections]);
+
+  const onLayerPointerDown = useMutation(
+    ({ self, setMyPresence }, e: React.PointerEvent, layerId: string) => {
+      if (
+        canvasState.mode === CanvasMode.Pencil ||
+        canvasState.mode === CanvasMode.Inserting
+      ) {
+        return;
+      }
+      history.pause();
+      e.stopPropagation();
+
+      const point = pointerEventToCanvasPoint(e, camera);
+
+      if (!self.presence.selection.includes(layerId)) {
+        setMyPresence(
+          {
+            selection: [layerId],
+          },
+          {
+            addToHistory: true,
+          }
+        );
+      }
+
+      setCanvasState({
+        mode: CanvasMode.Translating,
+        current: point,
+      });
+    },
+    [setCanvasState, camera, history, canvasState.mode]
+  );
+
+  const onResizeHandlePointerDown = useCallback(
+    (corner: Side, initialBounds: XYWH) => {
+      history.pause();
+      setCanvasState({
+        mode: CanvasMode.Resizing,
+        corner,
+        initialBounds,
+      });
+    },
+    [history]
+  );
+
   return (
     <main className="relative size-full touch-none bg-neutral-100">
       <Info boardId={boardId} />
@@ -160,10 +250,11 @@ export const Canvas = ({ boardId }: IProps) => {
             <LayerPreview
               key={layerId}
               id={layerId}
-              onLayerPointerDown={(e) => {}}
-              selectionColor="#000"
+              onLayerPointerDown={onLayerPointerDown}
+              selectionColor={layerIdsToColorSelection[layerId]}
             />
           ))}
+          <SelectionBox onResizeHandlePointerDown={onResizeHandlePointerDown} />
           <CursorPresence />
         </g>
       </svg>
