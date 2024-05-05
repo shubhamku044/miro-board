@@ -31,3 +31,5 @@ Run the backend development server in another terminal
 ```bash
 npx convex dev
 ```
+
+Boom🎉, the application is running on [http://localhost:3001](http://localhost:3001)
