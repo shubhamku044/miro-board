@@ -152,7 +152,6 @@ export const Canvas = ({ boardId }: IProps) => {
 
   const startMultiSelection = useCallback((current: Point, origin: Point) => {
     if (Math.abs(current.x - origin.x) + Math.abs(current.y - origin.y) > 10) {
-      console.log('Attempting to start multi selection');
       setCanvasState({
         mode: CanvasMode.SelectionNet,
         origin,
